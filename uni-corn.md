@@ -1,5 +1,6 @@
 ---
-layout: default
+  layout: default
+  title: "Uni-corn tutorial"
 ---
 
 ## [](#header-2)Uni-corn tutorial.

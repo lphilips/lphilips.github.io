@@ -8,7 +8,7 @@ This tutorial will guide you in writing a web application in [stip.js](https://b
 
 ### The application
 <p align="center">
-    <img src="/fig/uni-corn/home.png" width="500">
+	<img src="/fig/uni-corn/home.png" width="500">
 </p>
 This application can be used by students to manage their "uni-versity" carreer: keeping track of tasks, meetings en classes.
 The calendar and charts overview pages show the progress of the student.
@@ -37,32 +37,32 @@ The client tier contains all the code that is responsible for rendering the data
 /* @require [fs later]
    @slice setup */
 {
-    later.date.localTime();
+	later.date.localTime();
 
-    /* @observable */
-    var courses = [];
+	/* @observable */
+	var courses = [];
 
-    /* @observable */
-    function Course(title, duration, time) {
-    	this.title = title;
-    	this.duration = duration;
-    	this.time = time;
-    }
+	/* @observable */
+	function Course(title, duration, time) {
+		this.title = title;
+		this.duration = duration;
+		this.time = time;
+	}
 
-    function isValidTimeDescr (descr) {
-        var sched = later.parse.text(descr);
-        // no error => -1
-        return sched.error === -1;
-    }
+	function isValidTimeDescr (descr) {
+		var sched = later.parse.text(descr);
+		// no error => -1
+		return sched.error === -1;
+	}
 
-    var dataCourses = fs.readFile('data.json');
-    var coursesJSON = JSON.parse(dataCourses);
-    coursesJSON.forEach(function (json) {
-        if (!isValidTimeDescr(json.time))
-            throw new Error('Wrong time description in course');
-    	var course = new Course(json.title, json.duration, json.time);
-    	courses.push(course);
-    })
+	var dataCourses = fs.readFile('data.json');
+	var coursesJSON = JSON.parse(dataCourses);
+	coursesJSON.forEach(function (json) {
+		if (!isValidTimeDescr(json.time))
+			throw new Error('Wrong time description in course');
+		var course = new Course(json.title, json.duration, json.time);
+		courses.push(course);
+	})
 }
 ```
 
@@ -85,18 +85,18 @@ After that we read in the classes from the `data.json` file, make a new `Course`
 ```javascript
 /* @slice browser */
 {
-    function displaySchedule() {
+	function displaySchedule() {
 		var schedule = [];
 		courses.forEach(function (course) {
-            var nextDate = calculateNext(course.time);
-            var prevDate = calculatePrevious(course.time);
-            var endNextDate = addMinutes(nextDate, course.duration);
-            var endPrevDate = addMinutes(prevDate, course.duration);
-            var next = {title: course.title, start: nextDate.getTime(), end: endNextDate.getTime(), class: "event-info"};
-            var prev = {title: course.title, start: prevDate.getTime(), end: endPrevDate.getTime(), class: "event-info"};
-            schedule.push(next);
-            schedule.push(prev);
-        })
+			var nextDate = calculateNext(course.time);
+			var prevDate = calculatePrevious(course.time);
+			var endNextDate = addMinutes(nextDate, course.duration);
+			var endPrevDate = addMinutes(prevDate, course.duration);
+			var next = {title: course.title, start: nextDate.getTime(), end: endNextDate.getTime(), class: "event-info"};
+			var prev = {title: course.title, start: prevDate.getTime(), end: endPrevDate.getTime(), class: "event-info"};
+			schedule.push(next);
+			schedule.push(prev);
+		})
 		var calendar = $("#calendar").calendar({
 			tmpl_path : "tmpls/",
 			view : "week",
@@ -106,32 +106,43 @@ After that we read in the classes from the `data.json` file, make a new `Course`
 	}
 
 	function addMinutes(date, minutes) {
-        var ms = date.getTime();
-        return new Date(ms + minutes * 60000);
-    }
+		var ms = date.getTime();
+		return new Date(ms + minutes * 60000);
+	}
 
-    function calculateNext(timeDescription) {
-        var parsed = later.parse.text(timeDescription);
-        var s = later.schedule(parsed);
-        var next = s.next(1);
-        return new Date(next);
-    }
+	function calculateNext(timeDescription) {
+		var parsed = later.parse.text(timeDescription);
+		var s = later.schedule(parsed);
+		var next = s.next(1);
+		return new Date(next);
+	}
 
-    function calculatePrevious(timeDescription) {
-        var parsed = later.parse.text(timeDescription);
-        var s = later.schedule(parsed);
-        var next = s.prev(1);
-        return new Date(next);
-    }
+	function calculatePrevious(timeDescription) {
+		var parsed = later.parse.text(timeDescription);
+		var s = later.schedule(parsed);
+		var next = s.prev(1);
+		return new Date(next);
+	}
 
 }
 ```
+We define a second slice, `browser`, that defines a `displaySchedule` function, which will be called from the UI.
+It loops over the `courses` collection from the `setup` slice.
+Because we used the `@observable` data sharing annotation for the `courses` variable, we know that the client will receive a replica of this variable.
+This way, we can safely use the variable, even though we know that this slice will end up on the clien tier.
+
+We calculate for every class the previous and next instance and add it to the schedule of the calendar view.
+This is done by the auxiliary functions `addMinutes`, `calculateNext` and `calculatePrevious`.
+For simplicity reasons we calculate only 2 instances, but normally you should calculate more than two instances.
+
 ##### Slice placement
 ```javascript
 /* @config:
-    browser client
-    setup server  */
+	browser client
+	setup server  */
 ```
 The placement of the fixed slices can be defined through the `@config` annotation, inside comments.
 Put this configuration on top of all code and map the name of the slices to their tier.
 In this case we have only two slices that both have a fixed placement: the `browser` slice on the client and the `setup` slice on the server.
+
+### Adding more slices and computing a placement

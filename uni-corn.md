@@ -7,15 +7,17 @@ layout: default
 This tutorial will guide you in writing a web application in [stip.js](https://bit.ly/stipjs)
 
 ### The application
-<img src="/fig/uni-corn/home.png" width="500">
+<p align="center">
+    <img src="/fig/uni-corn/home.png" width="500">
+</p>
 This application can be used by students to manage their "uni-versity" carreer: keeping track of tasks, meetings en classes.
 The calendar and charts overview pages show the progress of the student.
 
 For this application we make use of several JavaScript libraries:
-..* [later.js](https://bunkat.github.io/later/) to express repeating schedules
-..* [highcharts](https://highcharts.com) to display the progress of the student
-..* [twitter bootstrap calendar](https://github.com/Serhioromano/bootstrap-calendar) to show the calendar
-..* [twitter bootstrap date+time picker](https://eonasdan.github.io/bootstrap-datetimepicker/)
+.* [later.js](https://bunkat.github.io/later/) to express repeating schedules
+.* [highcharts](https://highcharts.com) to display the progress of the student
+.* [twitter bootstrap calendar](https://github.com/Serhioromano/bootstrap-calendar) to show the calendar
+.* [twitter bootstrap date+time picker](https://eonasdan.github.io/bootstrap-datetimepicker/)
 
 ### Tierless JavaScript: slices + annotations
 The code is structured in terms of slices: blocks of code, annotated with a name.

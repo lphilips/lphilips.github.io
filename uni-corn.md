@@ -146,7 +146,7 @@ Put this configuration on top of all code and map the name of the slices to thei
 In this case we have only two slices that both have a fixed placement: the `browser` slice on the client and the `setup` slice on the server.
 
 
-### Adding more slices and computing a placement
+### Adding more slices
 The most interesting part of the application are the tasks and the meetings.
 They both have a dedicated page where new data can be entered, updated and viewed.
 <p align="center">
@@ -356,7 +356,23 @@ The `processTasksStatus` function returns the number of tasks for each task stat
 
 Because we don't perform tier-specific operations inside this slice, we make it an _unplaced_ slice.
 
-##### Automatic tier placement
+### Automatic tier placement
+The complete source code can be found [here](https://github.com/lphilips/jspdg/blob/master/stip/examples/progressapp-slices.js).
+Before the program transformations can insert distributed code into the application, a placement for every unplaced slice must be computed.
+The stip.js tool has a recommender system that focuses on the offline availability of the application.
+For this, the system first tries to optimise the placement of the unplaced slices, and secondly it reports possible slice refinements back to the user.
+Slice refinements could be adding annotations or moving certain definitions to a new slice.
+When following up on the advice, the recommender system can generate a placement that results in a better offline availability.
 
+For example, when we define only two slices, the tool will give a lot of advice on how to improve the code.
+It also returns an approximation, based on static analysis, on how well the configuration scores on offline availability.
 
+<p align="center">
+	<img src="/fig/uni-corn/advice.png" width="500">
+</p>
 
+By following up on the advice (and running the final version of our Uni-corn app), we get the following results:
+
+<p align="center">
+	<img src="/fig/uni-corn/output.png" width="500">
+</p>

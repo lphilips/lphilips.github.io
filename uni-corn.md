@@ -2,7 +2,7 @@
 layout: default
 ---
 
-## [](#header-2)Write the Uni-corn application in stip.js.
+## [](#header-2)Uni-corn tutorial.
 
 This tutorial will guide you in writing a web application in [stip.js](https://bit.ly/stipjs)
 
@@ -10,8 +10,8 @@ This tutorial will guide you in writing a web application in [stip.js](https://b
 <p align="center">
 	<img src="/fig/uni-corn/home.png" width="500">
 </p>
-This application can be used by students to manage their "uni-versity" carreer: keeping track of tasks, meetings en classes.
-The calendar and charts overview pages show the progress of the student.
+This application can be used by students who want to manage their "uni-versity" carreer: keeping track of tasks, meetings and classes.
+The calendar and progress overview pages visualise how the student is advancing.
 
 For this application we make use of several JavaScript libraries:
 
@@ -24,13 +24,16 @@ For this application we make use of several JavaScript libraries:
 ### Tierless JavaScript: slices + annotations
 The code is structured in terms of slices: blocks of code, annotated with a name.
 These slices contain tierless JavaScript code: plain JS, where functions can be called and defined in a sequential, local
-way without the need for explicit constructs for remote communication.
-You can define fixed slices: they will end up on the tier you put it on.
+way without the need for explicit constructs for remote communication or data replication.
+Fixed slices are assigned to a certain tier: client or server.
 If you're not sure where a slice should be, you can let the tool decide: it will make sure that the slice ends up where it should be!
 
 We define two fixed slices in this case: one for the server and one for the client tier.
 The server slice contains the code that reads in a file located on the server and declares the replicated data.
 The client tier contains all the code that is responsible for rendering the data in the browser.
+
+The main idea is that slices that perform a tier-specific task, like reading from a database or updating the DOM,
+have a fixed placement.
 
 ##### Server slice
 ```javascript
@@ -71,13 +74,13 @@ This annotation is placed inside comments, so other developer tools, like your f
 A `@slice` annotation is followed by a block statement, in which you define the code that belongs to that slice.
 We also use the `@require [libraries]` annotation, this makes sure that the correct libraries will be required in the resulting server side code.
 
-We have two declarations with a data sharing annotation: the courses collection and the constructor function for a Course.
+We have two declarations with a data sharing annotation: the `courses` collection and the constructor function for a `Course`.
 Using the `@observable` annotation, the tool makes sure that every client receives a replica of the data and its updates, but clients cannot change the data itself.
 In this case, the classes are processed from a file, but it could contact a remote service as well.
-If clients should be allowed to change the data as well, `@replicated` can be used.
+If clients should be allowed to change the data as well, the `@replicated` annotation can be used.
 
 We define an auxiliary function that checks if a given time description is valid.
-After that we read in the classes from the `data.json` file, make a new `Course`, and add it to the `courses` collection
+After that we read in the classes from the `data.json` file, make a new `Course`, and add it to the `courses` collection.
 
 
 ##### Client slice
@@ -129,11 +132,11 @@ After that we read in the classes from the `data.json` file, make a new `Course`
 We define a second slice, `browser`, that defines a `displaySchedule` function, which will be called from the UI.
 It loops over the `courses` collection from the `setup` slice.
 Because we used the `@observable` data sharing annotation for the `courses` variable, we know that the client will receive a replica of this variable.
-This way, we can safely use the variable, even though we know that this slice will end up on the clien tier.
+This way, we can safely use the variable, even though we know that this slice will end up on the client tier.
 
-We calculate for every class the previous and next instance and add it to the schedule of the calendar view.
+We calculate for every class the previous and next instance of a class and add it to the schedule of the calendar view.
 This is done by the auxiliary functions `addMinutes`, `calculateNext` and `calculatePrevious`.
-For simplicity reasons we calculate only 2 instances, but normally you should calculate more than two instances.
+For simplicity reasons we calculate only two instances, but normally you should calculate more instances.
 
 ##### Slice placement
 ```javascript
@@ -142,19 +145,19 @@ For simplicity reasons we calculate only 2 instances, but normally you should ca
      setup server  */
 ```
 The placement of the fixed slices can be defined through the `@config` annotation, inside comments.
-Put this configuration on top of all code and map the name of the slices to their tier.
+Put this configuration on top of all code and map the name of the slices to their respective tier.
 In this case we have only two slices that both have a fixed placement: the `browser` slice on the client and the `setup` slice on the server.
 
 
 ### Adding more slices
-The most interesting part of the application are the tasks and the meetings.
+The most interesting part of the application are the tasks and the meetings functionalities.
 They both have a dedicated page where new data can be entered, updated and viewed.
 <p align="center">
 	<img src="/fig/uni-corn/tasks.png" width="300">
     <img src="/fig/uni-corn/meetings.png" width="300">
 </p>
 
-Because they are very alike, we only explain the tasks.
+The definition, updating and views of meetings and tasks are alike, so we only show how all this is done for tasks.
 
 ##### Tasks
 First of all, we define a replicated data set to store the tasks and a constructor functions to create new tasks.
@@ -178,13 +181,13 @@ We add this to the `setup` slice defined previously.
 
 Both the declaration of the collection and the function constructor are replicated:
 this means that tasks added to the collection are automatically propagated to every client,
-and every chance to an instance of Tasks is synchronised between server and clients as well.
+and every chance to a `Task` instance is synchronised, even when the change comes from a client.
 
 ##### Adding a new slice
 The final application will have three collections: classes, tasks and meetings.
 We define getters, setters and sorting functions on these collections.
 Because the collections are replicated, we define a new slice that contains this code and we let the tool figure out where the code should end up.
-For this reason, we don't need to update the `@config` placement of the slices, because we now defined a _free_ or _unplaced_ slice.
+For this reason, we don't need to update the `@config` placement of the slices, because we now define a _free_ or _unplaced_ slice.
 ```javascript
 /* @slice getters+setters */
 {
@@ -218,7 +221,7 @@ For this reason, we don't need to update the `@config` placement of the slices, 
 ```
 
 ##### Display functions
-On the `browser` slice we add code to display and update the tasks collection or a specific task
+On the `browser` slice we add code to display and update the tasks collection or a specific task.
 ```javascript```
 /* @slice browser */
 {
@@ -363,6 +366,8 @@ The stip.js tool has a recommender system that focuses on the offline availabili
 For this, the system first tries to optimise the placement of the unplaced slices, and secondly it reports possible slice refinements back to the user.
 Slice refinements could be adding annotations or moving certain definitions to a new slice.
 When following up on the advice, the recommender system can generate a placement that results in a better offline availability.
+When trying to maximise the offline availability, some slices can be placed on the server and client tier.
+If the client heavily depends on the code of that slice, the resulting application will perform less round-trips to the server.
 
 For example, when we define only two slices, the tool will give a lot of advice on how to improve the code.
 It also returns an approximation, based on static analysis, on how well the configuration scores on offline availability.

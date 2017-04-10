@@ -155,6 +155,8 @@ They both have a dedicated page where new data can be entered, updated and viewe
 </p>
 
 Because they are very alike, we only explain the tasks.
+
+##### Tasks
 First of all, we define a replicated data set to store the tasks and a constructor functions to create new tasks.
 We add this to the `setup` slice defined previously.
 ```javascript
@@ -178,6 +180,7 @@ Both the declaration of the collection and the function constructor are replicat
 this means that tasks added to the collection are automatically propagated to every client,
 and every chance to an instance of Tasks is synchronised between server and clients as well.
 
+##### Adding a new slice
 The final application will have three collections: classes, tasks and meetings.
 We define getters, setters and sorting functions on these collections.
 Because the collections are replicated, we define a new slice that contains this code and we let the tool figure out where the code should end up.
@@ -214,7 +217,7 @@ For this reason, we don't need to update the `@config` placement of the slices, 
 }
 ```
 
-
+##### Display functions
 On the `browser` slice we add code to display and update the tasks collection or a specific task
 ```javascript```
 /* @slice browser */
@@ -248,6 +251,7 @@ When adding a new task, we use their values as the title and priority of the tas
 Afterwards, we reset them to the empty string.
 These variables are actually reactive variables: they are used in the UI and can be updated by the user in a form.
 
+##### The HTML part
 To define the UI part, we can use the `@ui` annotation, that takes HTML templating code from [Redstone](https://github.com/Bjarno/redstone).
 For the UI part for the tasks we have:
 ```
@@ -293,4 +297,13 @@ div#tasks-modal[class=section-modal]
 We install the event listeners `addTaskUI` and `nextStatusTaskUI` on the buttons itself.
 In the form we refer to the variables defined in the `browser` slice.
 The Redstone runtime makes sure that every change to the variable is reflected in the UI and vice versa.
+`{{#each}}`, `{{#if}}{{#else}}` control structures are used to loop over the task collection, for example.
+Every time a new task is inserted in the collection, the UI updates reactively.
 For the styling we use Twitter Bootstrap.
+
+##### Tracking progress
+<p align="center">
+	<img src="/fig/uni-corn/progress.png" width="500">
+</p>
+
+

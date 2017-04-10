@@ -242,6 +242,7 @@ On the `browser` slice we add code to display and update the tasks collection or
       task.lastUpdate = now.getTime();
     }
     sortTasks();
+    updateActivity();
   }
 ```
 We define two functions that will be called when a button is clicked: one to add a new task and one to edit an existing task.
@@ -301,10 +302,61 @@ The Redstone runtime makes sure that every change to the variable is reflected i
 Every time a new task is inserted in the collection, the UI updates reactively.
 For the styling we use Twitter Bootstrap.
 
-##### Tracking progress
+##### Tracking progress in a new slice
 <p align="center">
 	<img src="/fig/uni-corn/progress.png" width="500">
 </p>
+
+An important aspect of the application is the progress page where the progress of the student is visualised.
+For this we need keep track of the number of tasks that are updated on the current date.
+We also display a chart of meetings per month and a pie chart of the tasks.
+
+```javascript
+/* @slice statistics */
+{
+  var activityToday = 0;
+  var latestUpdate = false;
+
+  function updateActivity () {
+    var now = new Date();
+    if (latestUpdate) {
+      if (happenedToday(latestUpdate, now)) {
+        activityToday = activityToday + 1;
+        latestUpdate = now;
+      } else {
+        activityToday = 1;
+        latestUpdate = now;
+      }
+    } else {
+      latestUpdate = now;
+      activityToday = activityToday + 1;
+    }
+  }
+
+  function processTasksStatus () {
+    var todo = 0;
+    var finished = 0;
+    var inprogress = 0;
+    var tasks = getTasks();
+    tasks.forEach(function (task) {
+      if (task.status < 0)
+        todo++;
+      else if (task.status > 0)
+        finished++;
+      else
+        inprogress++;
+    });
+    return [todo, finished, inprogress]
+  }
+
+}
+```
+The new `statistics` slice has an `updateActivity` function that must be called every time a task is updated.
+The `processTasksStatus` function returns the number of tasks for each task status.
+
+Because we don't perform tier-specific operations inside this slice, we make it an _unplaced_ slice.
+
+##### Automatic tier placement
 
 
 

@@ -16,10 +16,10 @@ The calendar and charts overview pages show the progress of the student.
 For this application we make use of several JavaScript libraries:
 
 
-.* [later.js](https://bunkat.github.io/later/) to express repeating schedules
-.* [highcharts](https://highcharts.com) to display the progress of the student
-.* [twitter bootstrap calendar](https://github.com/Serhioromano/bootstrap-calendar) to show the calendar
-.* [twitter bootstrap date+time picker](https://eonasdan.github.io/bootstrap-datetimepicker/)
+* [later.js](https://bunkat.github.io/later/) to express repeating schedules
+* [highcharts](https://highcharts.com) to display the progress of the student
+* [twitter bootstrap calendar](https://github.com/Serhioromano/bootstrap-calendar) to show the calendar
+* [twitter bootstrap date+time picker](https://eonasdan.github.io/bootstrap-datetimepicker/)
 
 ### Tierless JavaScript: slices + annotations
 The code is structured in terms of slices: blocks of code, annotated with a name.
@@ -32,6 +32,7 @@ We define two fixed slices in this case: one for the server and one for the clie
 The server slice contains the code that reads in a file located on the server and declares the replicated data.
 The client tier contains all the code that is responsible for rendering the data in the browser.
 
+##### Server slice
 ```javascript
 /* @require [fs later]
    @slice setup */
@@ -64,6 +65,22 @@ The client tier contains all the code that is responsible for rendering the data
     })
 }
 ```
+
+We define our first slice `setup` with the `@slice name` annotation.
+This annotation is placed inside comments, so other developer tools, like your favorite IDE, will ignore it.
+A `@slice` annotation is followed by a block statement, in which you define the code that belongs to that slice.
+We also use the `@require [libraries]` annotation, this makes sure that the correct libraries will be required in the resulting server side code.
+
+We have two declarations with a data sharing annotation: the courses collection and the constructor function for a Course.
+Using the `@observable` annotation, the tool makes sure that every client receives a replica of the data and its updates, but clients cannot change the data itself.
+In this case, the classes are processed from a file, but it could contact a remote service as well.
+If clients should be allowed to change the data as well, `@replicated` can be used.
+
+We define an auxiliary function that checks if a given time description is valid.
+After that we read in the classes from the `data.json` file, make a new `Course`, and add it to the `courses` collection
+
+
+##### Client slice
 
 ```javascript
 /* @slice browser */
@@ -109,9 +126,12 @@ The client tier contains all the code that is responsible for rendering the data
 
 }
 ```
-
+##### Slice placement
 ```javascript
 /* @config:
-    browser: client
-    setup: server  */
+    browser client
+    setup server  */
 ```
+The placement of the fixed slices can be defined through the `@config` annotation, inside comments.
+Put this configuration on top of all code and map the name of the slices to their tier.
+In this case we have only two slices that both have a fixed placement: the `browser` slice on the client and the `setup` slice on the server.

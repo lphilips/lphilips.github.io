@@ -10,7 +10,7 @@ This tutorial will guide you in writing a web application in [stip.js](https://b
 <p align="center">
 	<img src="/fig/uni-corn/home.png" width="500">
 </p>
-This application can be used by students who want to manage their "uni-versity" carreer: keeping track of tasks, meetings and classes.
+This application can be used by students who want to manage their "uni-versity" careeer: keeping track of tasks, meetings and classes.
 The calendar and progress overview pages visualise how the student is advancing.
 
 For this application we make use of several JavaScript libraries:

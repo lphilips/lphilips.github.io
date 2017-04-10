@@ -251,6 +251,7 @@ These variables are actually reactive variables: they are used in the UI and can
 To define the UI part, we can use the `@ui` annotation, that takes HTML templating code from [Redstone](https://github.com/Bjarno/redstone).
 For the UI part for the tasks we have:
 ```
+{% raw %}
 /* @ui */
 div#tasks-modal[class=section-modal]
   div[class=modal-content]
@@ -273,9 +274,8 @@ div#tasks-modal[class=section-modal]
                     i[class=glyphicon-road]
                 div[class=timeline-panel]
                   h4[class=timeline-title] {{title}}
-                  button[@click=nextStatusTask]
+                  button[@click=nextStatusTaskUI]
                     i[class=glyphicon-check]
-
 
         div[class=col-md-4]
           div#task-form[class=form-horizontal]
@@ -288,4 +288,9 @@ div#tasks-modal[class=section-modal]
             div[class=form-group]
                button[@click=addTaskUI]#send
                  i[class=glyphicon-floppy-disk]
+{% endraw %}
 ```
+We install the event listeners `addTaskUI` and `nextStatusTaskUI` on the buttons itself.
+In the form we refer to the variables defined in the `browser` slice.
+The Redstone runtime makes sure that every change to the variable is reflected in the UI and vice versa.
+For the styling we use Twitter Bootstrap.

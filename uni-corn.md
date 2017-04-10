@@ -14,6 +14,8 @@ This application can be used by students to manage their "uni-versity" carreer: 
 The calendar and charts overview pages show the progress of the student.
 
 For this application we make use of several JavaScript libraries:
+
+
 .* [later.js](https://bunkat.github.io/later/) to express repeating schedules
 .* [highcharts](https://highcharts.com) to display the progress of the student
 .* [twitter bootstrap calendar](https://github.com/Serhioromano/bootstrap-calendar) to show the calendar
